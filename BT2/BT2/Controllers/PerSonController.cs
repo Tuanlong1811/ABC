@@ -9,12 +9,14 @@ using System.Web.Mvc;
 
 namespace BT2.Controllers
 {
+    [Authorize]
     public class PerSonController : Controller
     {
         private LTQLDbConText db = new LTQLDbConText();
         Autogenkey autoK = new Autogenkey();
         PerSon ps = new PerSon();
         // GET: PerSon
+        
         public ActionResult Index()
         {
             
