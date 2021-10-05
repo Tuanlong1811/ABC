@@ -6,11 +6,10 @@ using System.Web.Mvc;
 
 namespace BT2.Areas.Admins.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class HomeAdminController : Controller
     {
         // GET: Admins/HomeAdmin
-        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();

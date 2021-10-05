@@ -10,16 +10,15 @@ using BT2.Models;
 
 namespace BT2.Controllers
 {
+    [Authorize]
     public class InfoPerSonsController : Controller
     {
         private LTQLDbConText db = new LTQLDbConText();
-
         GenKeyAuto genkey = new GenKeyAuto();
         Autogenkey autoK = new Autogenkey();
         // GET: InfoPerSons
         public ActionResult Index()
         {
-            
             return View(db.InfoPerSons.ToList());
         }
 
@@ -42,7 +41,7 @@ namespace BT2.Controllers
         public ActionResult Create()
         {
             var PsID = db.PerSons.OrderByDescending(m => m.PerSonID).FirstOrDefault().PerSonID;
-            var newID = genkey.generatekey(PsID,3);
+            var newID = genkey.generatekey(PsID, 3);
             ViewBag.newperID = newID;
             return View();
         }
@@ -52,11 +51,11 @@ namespace BT2.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PerSonID,Description,Sex,PsName,Address")] InfoPerSon infoPerSon)
+        public ActionResult Create([Bind(Include = "PerSonID,PsName,Address,Description,Sex")] InfoPerSon infoPerSon)
         {
             if (ModelState.IsValid)
             {
-                db.InfoPerSons.Add(infoPerSon);
+                db.PerSons.Add(infoPerSon);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -84,7 +83,7 @@ namespace BT2.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "PerSonID,Description,Sex,PsName,Address")] InfoPerSon infoPerSon)
+        public ActionResult Edit([Bind(Include = "PerSonID,PsName,Address,Description,Sex")] InfoPerSon infoPerSon)
         {
             if (ModelState.IsValid)
             {
@@ -116,7 +115,7 @@ namespace BT2.Controllers
         public ActionResult DeleteConfirmed(string id)
         {
             InfoPerSon infoPerSon = db.InfoPerSons.Find(id);
-            db.InfoPerSons.Remove(infoPerSon);
+            db.PerSons.Remove(infoPerSon);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

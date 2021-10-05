@@ -37,32 +37,106 @@ namespace BT2.Controllers
             return View(acc);
         }
 
+        [AllowAnonymous]
+
+
+
+
+
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.returnUrl = returnUrl;
+            if (CheckSession() == 1)
+            {
+                return RedirectToAction("Index", "HomeAdmin", new { Area = "Admins" });
+            }
+            else if (CheckSession() == 2)
+            {
+                return RedirectToAction("Index", "HomeEmp", new { Area = "Employees" });
+            }
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+
+
         [AllowAnonymous]
-        public ActionResult Login(Account acc,string returnUrl)
+        [HttpPost]
+        public ActionResult Login(Account acc, string returnUrl)
         {
-            if (ModelState.IsValid)
+            try
             {
-                string encrytionpass = ecry.PasswordEncrytion(acc.Password);
-                var model = db.Accounts.Where(m => m.UserName == acc.UserName && m.Password == encrytionpass).ToList().Count();
-                if(model == 1)
+                if (!string.IsNullOrEmpty(acc.UserName) && !string.IsNullOrEmpty(acc.Password))
                 {
-                    FormsAuthentication.SetAuthCookie(acc.UserName, true);
-                    return RedirectToLocal(returnUrl);
-                }else
-                {
-                    ModelState.AddModelError("", "Thong tin không chính xác");
+                    using (var db = new LTQLDbConText())
+                    {
+                        var passToMD5 = ecry.PasswordEncrytion(acc.Password);
+                        var account = db.Accounts.Where(m => m.UserName.Equals(acc.UserName) && m.Password.Equals(passToMD5)).Count();
+                        if (account == 1)
+                        {
+                            FormsAuthentication.SetAuthCookie(acc.UserName, false);
+                            Session["idUser"] = acc.UserName;
+                            Session["roleUser"] = acc.RoleID;
+                            return RedirectToLocal(returnUrl);
+                        }
+                        ModelState.AddModelError("", "Thông tin đăng nhập chưa chính xác");
+                    }
                 }
-                
+
+                ModelState.AddModelError("", "Username and password is required.");
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Hệ thống đang được bảo trì, vui lòng liên hệ với quản trị viên");
             }
             return View(acc);
         }
+        private ActionResult RedirectToLocal(string returnUrl)
+        {
+
+            if (string.IsNullOrEmpty(returnUrl) || returnUrl == "/")
+            {
+                if (CheckSession() == 1)
+                {
+                    return RedirectToAction("Index", "HomeAdmin", new { Area = "Admins" });
+                }
+                else if (CheckSession() == 2)
+
+                {
+                    return RedirectToAction("Index", "HomeEmp", new { Area = "Employees" });
+                }
+
+            }
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public ActionResult Login(Account acc, string returnUrl)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        string encrytionpass = ecry.PasswordEncrytion(acc.Password);
+        //        var model = db.Accounts.Where(m => m.UserName == acc.UserName && m.Password == encrytionpass).ToList().Count();
+        //        if (model == 1)
+        //        {
+        //            FormsAuthentication.SetAuthCookie(acc.UserName, true);
+        //            return RedirectToLocal(returnUrl);
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError("", "Thong tin không chính xác");
+        //        }
+
+        //    }
+        //    return View(acc);
+        //}
 
         public ActionResult Logout()
         {
@@ -70,15 +144,46 @@ namespace BT2.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        //private ActionResult RedirectToLocal(string returnUrl)
+        //{
+        //    if (Url.IsLocalUrl(returnUrl))
+        //    {
+        //        return Redirect(returnUrl);
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //}
+
+        //Kiểm tra người dùng đăng nhập quyền gì
+        private int CheckSession()
         {
-            if (Url.IsLocalUrl(returnUrl))
+            using (var db = new LTQLDbConText())
             {
-                return Redirect(returnUrl);
-            }else
-            {
-                return RedirectToAction("Index", "Home");
+                var user = HttpContext.Session["idUser"];
+
+                if (user != null)
+                {
+                    var role = db.Accounts.Find(user.ToString()).RoleID;
+
+                    if (role != null)
+                    {
+                        if (role.ToString() == "Admin")
+
+                        {
+                            return 1;
+                        }
+
+                        else if (role.ToString() == "nv")
+
+                        {
+                            return 2;
+                        }
+                    }
+                }
             }
+            return 0;
         }
     }
 }

@@ -18,27 +18,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.PerSonID, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input type="text" name="PerSonID" value="@ViewBag.newperID" class="form-control" />
-                @*@Html.EditorFor(model => model.PerSonID, new { htmlAttributes = new { @class = "form-control" } })*@
+                <input type="text" name="PerSonID" value="@ViewBag.newperID" disabled/>
                 @Html.ValidationMessageFor(model => model.PerSonID, "", new { @class = "text-danger" })
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @*@Html.TextAreaFor(model => model.Description, new { @class = "ckeditor" })*@
-                <textarea id="w3review" name="Description" rows="10" cols="50" class="ckeditor"></textarea>
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Sex, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -59,6 +40,24 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.TextAreaFor(model => model.Description, new { @class = "ckeditor" })*@
+                <textarea id="Description" name="Description" rows="10" cols="50" class="ckeditor"></textarea>
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Sex, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
@@ -68,6 +67,4 @@
 
 <div>
     @Html.ActionLink("Back to List", "Index")
-</div>
-@Scripts.Render("~/bundles/ckeditor")
-
+</div>    @Scripts.Render("~/bundles/ckeditor")

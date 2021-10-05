@@ -14,7 +14,8 @@ namespace BT2.Models
 
         public virtual DbSet<PerSon> PerSons { get; set; }
         public virtual DbSet<InfoPerSon> InfoPerSons { get; set; }
-        public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }        
+        public virtual DbSet<Role> Roles { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
